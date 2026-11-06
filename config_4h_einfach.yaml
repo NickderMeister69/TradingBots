@@ -1,0 +1,62 @@
+mode: paper
+exchange: binance
+market: futures
+bot_name: 4h ohne Nachkaufen
+data_dir: data_4h_einfach
+dashboard_port: 8007
+strategy_mode: ausbruch
+timeframe: 4h
+symbol_mode: manual
+symbols:
+- BTC/USDT
+- ETH/USDT
+- SOL/USDT
+- XRP/USDT
+- BNB/USDT
+- DOGE/USDT
+- ADA/USDT
+- AVAX/USDT
+- LINK/USDT
+- LTC/USDT
+loop_seconds: 15
+price_seconds: 2
+max_open_risk: 0.05
+max_positions: 15
+max_leverage: 5
+max_total_drawdown: 0.25
+max_capital_usdt: 0
+paper_start_balance: 5000
+fee_rate: 0.0005
+follow_pros: nicht_gegen
+breakout_params:
+  min_trend_atr: 2.0
+  entry_n: 30
+  exit_m: 15
+  ichimoku: true
+account_reset:
+  start: 5000.0
+  at: '2026-10-20T15:37:58+00:00'
+preset_version: 23
+pyramid:
+  step_atr: 1.0
+  max_units: 1
+risk_per_trade: 0.01
+daily_loss_limit: 0.03
+scan_top: 15
+scan_min_volume_m: 50
+scan_minutes: 15
+scan_always:
+- BTC/USDT
+scan_majors: true
+scan_top_volume: 5
+learned:
+  rules: []
+  coin_cooldown: {}
+spot_max_allocation: 0.05
+breakeven_at_r: 1.0
+trail_at_r: 2.0
+strategy_params: {}
+btc_filter: true
+order_type: limit
+limit_wait_s: 15
+fee_maker: 0.0002

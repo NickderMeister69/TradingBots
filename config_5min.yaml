@@ -1,0 +1,63 @@
+bot_name: Kraken Tag
+exchange: krakenfutures
+market: futures
+mode: paper
+data_dir: data_5min
+dashboard_port: 8002
+symbol_mode: manual
+symbols:
+- BTC/USD
+- ETH/USD
+- SOL/USD
+- XRP/USD
+- BNB/USD
+- DOGE/USD
+- ADA/USD
+- AVAX/USD
+- LINK/USD
+- LTC/USD
+scan_top: 15
+scan_min_volume_m: 50
+scan_minutes: 5
+timeframe: 1d
+loop_seconds: 10
+price_seconds: 2
+risk_per_trade: 0.005
+max_leverage: 3
+max_positions: 15
+daily_loss_limit: 0.03
+breakeven_at_r: 1.0
+trail_at_r: 2.0
+spot_max_allocation: 0.2
+paper_start_balance: 1000
+fee_rate: 0.0005
+max_total_drawdown: 0.25
+max_capital_usdt: 0
+learned:
+  rules: []
+  coin_cooldown: {}
+  ampel:
+    status: rot
+    mult: 0.5
+    why: keine getestete Variante verdient gerade (-23.9 R bei 309 Trades)
+    at: '2026-10-17T16:35:00+00:00'
+scan_always:
+- BTC/USD
+scan_majors: true
+scan_top_volume: 5
+follow_pros: nicht_gegen
+strategy_mode: ausbruch
+max_open_risk: 0.05
+preset_version: 23
+account_reset:
+  start: 5000.0
+  at: '2026-10-20T15:37:59+00:00'
+breakout_params:
+  entry_n: 20
+  exit_m: 10
+quote: USD
+strategy_params: {}
+btc_filter: true
+order_type: limit
+limit_wait_s: 15
+fee_maker: 0.0002

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#141a21">
+<title>Copy-Trading Bot</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪞</text></svg>">
+<link rel="stylesheet" href="/static/style.css?v=1">
+</head>
+<body>
+<header class="top">
+  <div class="top-row">
+    <h1>Copy-Trading Bot</h1>
+    <span class="pill pill-amber">Spielgeld (Testkonto) · 5.000 € Start</span>
+  </div>
+  <div class="top-row" id="statusPills">
+    <span class="pill" id="pillConn">verbindet …</span>
+    <span class="pill" id="pillStatus">…</span>
+    <span class="pill" id="pillTraders">Profis werden gesucht</span>
+  </div>
+  <div class="top-row">
+    <button class="btn" id="btnPause">Pause</button>
+    <button class="btn btn-red" id="btnKill">Not-Aus</button>
+    <span class="muted small" id="lastCycle"></span>
+  </div>
+</header>
+
+<main>
+  <details class="card help">
+    <summary>So liest du diese Seite (Begriffe einfach erklärt)</summary>
+    <dl>
+      <dt>Was macht der Bot?</dt>
+      <dd>Er schaut alle 45 Sekunden in die offenen Positionen der 100 besten Trader auf Hyperliquid (dort sind alle Konten öffentlich einsehbar). Wenn eine klare Mehrheit dieser Profis auf einen Coin setzt, macht der Bot dasselbe – mit Spielgeld.</dd>
+      <dt>Spielgeld / Testkonto</dt>
+      <dd>Es wird kein echtes Geld bewegt und nichts an eine Börse geschickt. Kurse, Gebühren (0,045 %), schlechtere Ausführung (0,03 %) und Funding sind aber echt gerechnet. Kursbewegungen werden 1:1 in Euro gerechnet, der Dollar-Kurs bleibt außen vor.</dd>
+      <dt>Long / Short</dt>
+      <dd>Long = wettet auf steigende Kurse. Short = wettet auf fallende Kurse.</dd>
+      <dt>Hebel</dt>
+      <dd>Mit Hebel 3 bewegt sich eine Position dreimal so stark wie der Einsatz. 100 € Einsatz steuern 300 € Position. Gewinne und Verluste wachsen mit.</dd>
+      <dt>Mehrheit / Stimmung</dt>
+      <dd>Der Balken zeigt, wie viele der Profis (gewichtet nach Vertrauen und Einsatz) auf steigend (grün) oder fallend (rot) setzen. Der Strich zeigt, ab wann der Bot einsteigt.</dd>
+      <dt>Vertrauen</dt>
+      <dd>Jede Runde rechnet der Bot nach, was es gebracht hätte, genau diesen Profi zu kopieren. Bringt er Geld, zählt seine Meinung mehr (über 1×), verliert er, zählt sie weniger. Wer dauerhaft unter 0,3× fällt, wird aussortiert.</dd>
+      <dt>Funding</dt>
+      <dd>Bei Perps zahlen Long und Short sich stündlich eine kleine Gebühr. Mal bekommt der Bot sie, mal zahlt er sie.</dd>
+      <dt>Schattenkonten</dt>
+      <dd>Mehrere unsichtbare Testkonten handeln parallel mit anderen Regeln. Ist eines nachweislich besser, übernimmt der Bot dessen Regeln. So lernt er, ohne dem Zufall hinterherzulaufen.</dd>
+    </dl>
+  </details>
+
+  <section class="grid-money">
+    <div class="card money">
+      <div class="label" id="potLabel">Topf des Bots</div>
+      <div class="big mono" id="equity">–</div>
+      <div class="sub" id="equitySub"></div>
+    </div>
+    <div class="card money">
+      <div class="label" id="todayLabel">Heute</div>
+      <div class="big mono" id="today">–</div>
+      <div class="sub" id="todaySub"></div>
+    </div>
+    <div class="card money">
+      <div class="label">Gewinn / Verlust insgesamt</div>
+      <div class="big mono" id="total">–</div>
+      <div class="sub" id="totalSub"></div>
+    </div>
+    <div class="card money">
+      <div class="label">Trades mit Gewinn</div>
+      <div class="big mono" id="winrate">–</div>
+      <div class="sub" id="winrateSub"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Verlauf des Topfs</h2>
+      <div class="seg" id="rangeSeg">
+        <button data-range="day">Tag</button><button data-range="week">Woche</button><button data-range="all" class="on">Alles</button>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="chart" height="220" aria-label="Kontoverlauf"></canvas></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2><span class="dot" id="coinsDot"></span>Was die Profis gerade handeln</h2>
+      <span class="muted small" id="coinsMeta"></span>
+    </div>
+    <p class="muted small">Pro Coin: wie viele der Top-Profis drin sind und wohin die Mehrheit wettet. Darunter steht, was der Bot daraus macht.</p>
+    <div id="coins" class="coins"></div>
+  </section>
+
+  <section class="card">
+    <h2>Laufende Trades</h2>
+    <div id="positions"></div>
+  </section>
+
+  <section class="card">
+    <h2>Abgeschlossene Trades</h2>
+    <div id="trades"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Die Top-Profis, die kopiert werden</h2>
+      <label class="check small"><input type="checkbox" id="onlyActive"> nur mit offenen Positionen</label>
+    </div>
+    <p class="muted small" id="selectionMeta"></p>
+    <div id="traders" class="traders"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Lernen: wie der Bot besser wird</h2>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btnEval">Jetzt auswerten</button>
+        <button class="btn btn-ghost" id="btnSelftest">Selbsttest starten</button>
+      </div>
+    </div>
+    <p class="muted small" id="evalMeta"></p>
+
+    <h3>Was der Bot gelernt hat und gerade anwendet</h3>
+    <div id="learned"></div>
+    <div id="currentRules" class="rules"></div>
+
+    <h3>Strategie-Wettbewerb (Schattenkonten)</h3>
+    <p class="muted small" id="variantRule"></p>
+    <div id="variants" class="table-wrap"></div>
+
+    <h3>Was bisher gut und was schlecht lief</h3>
+    <div id="coinStats"></div>
+
+    <h3>Selbsttest</h3>
+    <div id="selftest"></div>
+
+    <h3>Verlauf</h3>
+    <div id="events" class="events"></div>
+  </section>
+
+  <section class="card">
+    <h2>Was der Bot gerade tut</h2>
+    <div id="log" class="log mono"></div>
+  </section>
+
+  <section class="card">
+    <h2>Einstellungen</h2>
+    <p class="muted small">Hebel und Größen bestimmst du. Mehrheit, Mindestzahl und Stop-Loss passt der Bot beim Lernen selbst an, wenn Auto-Lernen an ist.</p>
+    <form id="settingsForm" class="settings" autocomplete="off">
+      <label>Hebel<input type="number" name="leverage" min="0.5" max="10" step="0.5"><small>0,5 bis 10. Höher = mehr Risiko.</small></label>
+      <label>Einsatz je Coin (% vom Topf)<input type="number" name="max_coin_pct" min="2" max="100" step="1"><small>Margin für einen Coin bei voller Größe.</small></label>
+      <label>Einsatz gesamt (% vom Topf)<input type="number" name="max_margin_pct" min="5" max="95" step="1"><small>Mehr wird nie gleichzeitig gebunden.</small></label>
+      <label>Max. Coins gleichzeitig<input type="number" name="max_positions" min="1" max="50" step="1"><small>Nur die stärksten Signale werden gehandelt.</small></label>
+      <label>Stop-Loss (% Kursbewegung)<input type="number" name="stop_loss_pct" min="0.5" max="50" step="0.5"><small>Dann steigt der Bot aus, egal was die Profis machen.</small></label>
+      <label>Mindestzahl Profis im Coin<input type="number" name="min_traders" min="1" max="30" step="1"><small>So viele müssen drin sein.</small></label>
+      <label>Einstiegs-Mehrheit (%)<input type="number" name="min_agreement" min="55" max="100" step="1"><small>Gewichteter Anteil auf einer Seite.</small></label>
+      <label>Ausstieg unter Mehrheit (%)<input type="number" name="exit_agreement" min="50" max="95" step="1"><small>Fällt die Mehrheit darunter: raus.</small></label>
+      <label>Verlust-Grenze (% unter Höchststand)<input type="number" name="max_drawdown_pct" min="5" max="90" step="1"><small>Dann automatischer Not-Aus.</small></label>
+      <label>Abfrage alle (Sekunden)<input type="number" name="cycle_seconds" min="20" max="600" step="5"><small>Kürzer = schneller, aber mehr Anfragen.</small></label>
+      <label class="check"><input type="checkbox" name="auto_learn"> Auto-Lernen: Bot darf bessere Regeln selbst übernehmen</label>
+      <div class="btn-row full">
+        <button class="btn btn-green" type="submit">Speichern</button>
+        <span class="muted small" id="settingsMsg"></span>
+      </div>
+    </form>
+    <div class="danger">
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btnRefresh">Profi-Auswahl jetzt neu laden</button>
+        <button class="btn btn-ghost btn-red-text" id="btnReset">Testkonto zurücksetzen</button>
+        <label class="check small"><input type="checkbox" id="keepLearning" checked> Gelerntes über die Profis behalten</label>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Wie die Profis ausgewählt werden</h2>
+    <div id="criteria" class="muted small"></div>
+  </section>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="/static/app.js?v=2"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Geheime Schluessel – niemals hochladen
+.env
+
+# Laufzeitdaten der Bots (Trades, Logs, Kontostand)
+data/
+data_*/
+copybot/data/
+copybot/data_*/
+*.log
+*.sqlite3
+*.sqlite3-*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/

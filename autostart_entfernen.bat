@@ -1,0 +1,3 @@
+@echo off
+powershell -NoProfile -Command "$d=[Environment]::GetFolderPath('Startup'); foreach($n in @('Trading Bot','Trading Bot Bybit','Trading Bot 5min','Trading Bot Scanner','Trading Bot Daytrade','Trading Bot Daytrade sicher','Trading Bot Daytrade mittel','Trading Bot 4h einfach','Trading Bot Riskant','Trading Bot 15min','Trading Bot Copy-Bot','Trading Bot Copy sicher','Trading Bot Copy vorsichtig','Trading Bot Copy mutig','Trading Bot Copy riskant','Trading Bot Copy konzentriert','Trading Bot Copy Zufall','Trading Bot SMA-Kreuz','Trading Bot 2 Prozent','Trading Bot Gold','Trading Bot Trendlinien','Bot-Waechter')){ $p=$d+'\'+$n+'.lnk'; if(Test-Path $p){ Remove-Item $p; Write-Host ('Autostart entfernt: '+$n) } }"
+pause

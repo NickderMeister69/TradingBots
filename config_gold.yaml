@@ -1,0 +1,50 @@
+mode: paper
+exchange: binance
+market: futures
+bot_name: Gold Tag
+data_dir: data_gold
+dashboard_port: 8019
+strategy_mode: ausbruch
+timeframe: 1d
+symbol_mode: manual
+symbols:
+- PAXG/USDT
+loop_seconds: 15
+price_seconds: 2
+max_open_risk: 0.07
+max_positions: 2
+max_leverage: 5
+max_total_drawdown: 0.35
+max_capital_usdt: 0
+paper_start_balance: 5000
+fee_rate: 0.0005
+follow_pros: aus
+breakout_params:
+  min_trend_atr: 2.0
+  entry_n: 30
+  exit_m: 15
+  ichimoku: true
+preset_version: 23
+pyramid:
+  step_atr: 1.0
+  max_units: 2
+risk_per_trade: 0.03
+daily_loss_limit: 0.08
+scan_top: 15
+scan_min_volume_m: 50
+scan_minutes: 15
+scan_always:
+- PAXG/USDT
+scan_majors: false
+scan_top_volume: 5
+learned:
+  rules: []
+  coin_cooldown: {}
+spot_max_allocation: 0.05
+breakeven_at_r: 1.0
+trail_at_r: 2.0
+strategy_params: {}
+btc_filter: false
+order_type: limit
+limit_wait_s: 15
+fee_maker: 0.0002
