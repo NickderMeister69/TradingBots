@@ -227,7 +227,6 @@ Mindestens 2-4 Wochen so laufen lassen.
 
 Klein anfangen. Die Schluessel bleiben nur auf deinem PC, gib `.env` niemandem.
 
-## Wichtig, ehrlich
 
 - **Futures in Deutschland:** Binance bietet Derivate fuer Privatkunden in Deutschland
   nicht bzw. nur eingeschraenkt an. Wenn du beim API-Key kein Futures-Recht setzen kannst
@@ -235,9 +234,3 @@ Klein anfangen. Die Schluessel bleiben nur auf deinem PC, gib `.env` niemandem.
   Im Spot-Modus verwaltet der Bot die Stops selbst, der PC muss also laufen.
 - **Kein Bot gewinnt immer.** Verlusttrades gibt es, sie sind aber klein und geplant.
   Ein guter Backtest heisst nicht, dass die Zukunft gleich laeuft.
-- Ich bin kein Finanzberater. Setze nur Geld ein, dessen Verlust du verkraftest.
-
-## Updates einspielen
-
-Ordner `bot` und `run.py` ersetzen. `data`, `.env` und `config.yaml` behalten.
-Danach den Bot neu starten (Fenster schliessen, `start.bat`).
